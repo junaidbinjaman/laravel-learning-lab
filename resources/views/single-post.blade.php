@@ -6,12 +6,7 @@
                 <span class="pt-2">
           <a href="/post/{{$post->id}}/edit" class="text-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"><i
                   class="fas fa-edit"></i></a>
-          <form class="delete-post-form d-inline" action="/post/{{$post->id}}" method="POST">
-              @method('DELETE')
-              @csrf
-            <button class="delete-post-button text-danger" data-toggle="tooltip" data-placement="top" title="Delete"><i
-                    class="fas fa-trash"></i></button>
-          </form>
+          <livewire:deletepost :post="$post" />
         </span>
             @endcan
         </div>
