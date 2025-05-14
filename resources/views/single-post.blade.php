@@ -4,7 +4,7 @@
             <h2>{{ $post->title  }}</h2>
             @can('update', $post)
                 <span class="pt-2">
-          <a href="/post/{{$post->id}}/edit" class="text-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"><i
+          <a wire:navigate href="/post/{{$post->id}}/edit" class="text-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"><i
                   class="fas fa-edit"></i></a>
           <livewire:deletepost :post="$post" />
         </span>

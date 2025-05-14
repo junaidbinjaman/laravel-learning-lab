@@ -8,7 +8,14 @@ class Deletepost extends Component
 {
     public $post;
 
-    public d
+    public function delete()
+    {
+        $this->authorize('delete', $this->post);
+        $this->post->delete();
+        session()->flash('success', 'Post successfully deleted');
+
+        return $this->redirect('/profile/' . auth()->user()->username, navigate: true);
+    }
 
     public function render()
     {
