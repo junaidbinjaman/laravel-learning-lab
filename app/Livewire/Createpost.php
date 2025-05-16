@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Jobs\SendNewPostEmail;
 use App\Models\Post;
 use Livewire\Component;
 
@@ -27,11 +28,12 @@ class Createpost extends Component
 
         $newPost = Post::create($incomingFields);
 
-        session()->flash('success', 'New post successfully created.');
+        dispatch(new SendNewPostEmail(['sendTo' => auth()->user()->email, 'name' => auth()->user()->username, 'title' => $newPost->title]));
+
+        session()->flash('success', 'New post successfully created.--!!');
 
         return $this->redirect("/post/{$newPost->id}", navigate: true);
 
-        return redirect("/post/{$newPost->id}")->with('success', 'New post is successfully created.');
     }
 
     public function render()
