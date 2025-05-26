@@ -8,9 +8,8 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function profile(User $pizza) {
-
-        return view('profile-posts', ['username' => $pizza->username]);
+    public function profile(User $user) {
+        return view('profile-posts', ['username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'postCount' => $user->posts()->count()]);
     }
 
     public function logout()

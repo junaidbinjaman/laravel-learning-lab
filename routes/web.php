@@ -15,7 +15,8 @@ Route::post('/logout', [UserController::class, 'logout']);
 Route::get('/create-post', [PostController::class, 'showCreateForm'])->middleware('mustBeLoggedIn');
 Route::post('/create-post', [PostController::class, 'storeNewPost']);
 Route::get('/post/{post}', [PostController::class, 'viewSinglePost']);
+Route::delete('/post/{post}', [PostController::class, 'delete']);
 
 // Profile related routes
-Route::get('/profile/{pizza:username}', [UserController::class, 'profile']);
+Route::get('/profile/{user:username}', [UserController::class, 'profile']);
 
