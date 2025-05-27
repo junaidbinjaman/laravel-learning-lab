@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
 
+    public function viewSinglePost(Post $post) {
+        $post['body'] = strip_tags(Str::markdown($post->body), '<p><h2><ul><h1><ol><br><bold><b><li><em');
+        return view('single-post', ['post' => $post]);
+    }
     public  function storeNewPost(Request $request) {
         $incomingFields = $request->validate([
             'title' => 'required',
@@ -18,9 +23,9 @@ class PostController extends Controller
         $incomingFields['body'] = strip_tags($incomingFields['body']);
         $incomingFields['user_id'] = auth()->id();
 
-        Post::create($incomingFields);
+        $newPost = Post::create($incomingFields);
 
-        return 'jeu';
+        return redirect("/post/{$newPost->id}")->with('success', 'New post is successfully created.');
     }
 
     //
