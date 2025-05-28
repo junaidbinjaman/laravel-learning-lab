@@ -14,7 +14,8 @@ Route::get('/', [UserController::class, 'showCorrectHomepage'])->name('login');
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
-Route::get('/manage-avatar', [UserController::class, 'showAvatarForm']);
+Route::get('/manage-avatar', [UserController::class, 'showAvatarForm'])->middleware('mustBeLoggedIn');
+Route::post('/manage-avatar', [UserController::class, 'storeAvatar'])->middleware('mustBeLoggedIn');
 
 // Blog post related routes
 Route::get('/create-post', [PostController::class, 'showCreateForm'])->middleware('mustBeLoggedIn');

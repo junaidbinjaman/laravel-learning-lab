@@ -4,11 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class UserController extends Controller
 {
 
+    public function storeAvatar(Request $request) {
+        $request->validate([
+            'avatar' => 'required|image|max:3000'
+        ]);
+
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($request->file('avatar'));
+        $imageData = $image->cover(120, 120)->toJpeg();
+        Storage::disk('public')->put('exampleFolder/cool.jpg', $imageData);
+
+        return 'hey';
+    }
     public function showAvatarForm() {
         return view('avatar-form');
     }
