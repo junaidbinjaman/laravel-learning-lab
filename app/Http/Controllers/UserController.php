@@ -6,6 +6,7 @@ use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -13,14 +14,15 @@ use Intervention\Image\ImageManager;
 class UserController extends Controller
 {
 
-    public function storeAvatar(Request $request) {
+    public function storeAvatar(Request $request)
+    {
         $request->validate([
             'avatar' => 'required|image|max:3000'
         ]);
 
         $user = auth()->user();
 
-        $filename = $user->id . "-". uniqid() . ".jpg";
+        $filename = $user->id . "-" . uniqid() . ".jpg";
 
         $manager = new ImageManager(new Driver());
         $image = $manager->read($request->file('avatar'));
@@ -39,11 +41,13 @@ class UserController extends Controller
         return back()->with('success', 'Congrats on the new avatar.');
     }
 
-    public function showAvatarForm() {
+    public function showAvatarForm()
+    {
         return view('avatar-form');
     }
 
-    public function profile(User $user) {
+    protected function getSharedData(User $user)
+    {
         $currentlyFollowing = 0;
         if (auth()->check()) {
             $currentlyFollowing = Follow::where([
@@ -52,7 +56,33 @@ class UserController extends Controller
             ])->count();
         }
 
-        return view('profile-posts', ['currentlyFollowing' => $currentlyFollowing, 'avatar' => $user->avatar,'username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'postCount' => $user->posts()->count()]);
+        // Share the associative array directly, making it easier to access in views
+        View::share('sharedData', [
+            'currentlyFollowing' => $currentlyFollowing,
+            'avatar' => $user->avatar,
+            'username' => $user->username,
+            'postCount' => $user->posts()->count(),
+            'followerCount' => $user->followers()->count(),
+            'followingCount' => $user->followingTheseUsers()->count()
+        ]);
+    }
+
+    public function profile(User $user)
+    {
+        $this->getSharedData($user);
+        return view('profile-posts', ['posts' => $user->posts()->latest()->get(), 'postCount' => $user->posts()->count()]);
+    }
+
+    public function profileFollower(User $user)
+    {
+        $this->getSharedData($user);
+        return view('profile-follower', ['followers' => $user->followers()->latest()->get(), 'postCount' => $user->posts()->count()]);
+    }
+
+    public function profileFollowing(User $user)
+    {
+        $this->getSharedData($user);
+        return view('profile-following', ['following' => $user->followingTheseUsers()->latest()->get(), 'postCount' => $user->posts()->count()]);
     }
 
     public function logout()
@@ -70,7 +100,8 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $incomingFields = $request->validate([
             'loginusername' => 'required',
             'loginpassword' => 'required'
@@ -84,7 +115,8 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $incomingFields = $request->validate([
             'username' => ['required', 'min:3', 'max:20', Rule::unique('users', 'username')],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
