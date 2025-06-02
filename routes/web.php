@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
+use \App\Events\ChatMessage;
+use Illuminate\Http\Request;
 
 Route::get('/admins-only', function (){
     return 'Only admin should be able to see this page';
@@ -38,3 +40,16 @@ Route::get('/profile/{user:username}', [UserController::class, 'profile']);
 Route::get('/profile/{user:username}/followers', [UserController::class, 'profileFollower']);
 Route::get('/profile/{user:username}/following', [UserController::class, 'profileFollowing']);
 
+// Chat route
+Route::post('send-chat-message', function (Request $request) {
+    $formFields = $request->validate([
+        'textvalue' => 'required'
+    ]);
+
+    if (!trim(strip_tags($formFields['textvalue']))) {
+        return response()->noContent();
+    }
+    broadcast(new ChatMessage(['username' => auth()->user()->username, 'textvalue' => strip_tags($request->textvalue), 'avatar' => auth()->user()->avatar]))->toOthers();
+    return response()->noContent();
+
+})->middleware('mustBeLoggedIn');
