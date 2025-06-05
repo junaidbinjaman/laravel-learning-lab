@@ -6,6 +6,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
 use \App\Events\ChatMessage;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Login;
+use \App\Http\Controllers\Registration;
 
 Route::get('/admins-only', function (){
     return 'Only admin should be able to see this page';
@@ -53,3 +55,8 @@ Route::post('send-chat-message', function (Request $request) {
     return response()->noContent();
 
 })->middleware('mustBeLoggedIn');
+
+// New routes
+Route::get('/login', [Login::class, 'login']);
+Route::post('/login', [Login::class, 'logincapture']);
+Route::get('/registration', [Registration::class, 'registration']);
