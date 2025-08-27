@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\StudentApiController;
 use App\Http\Controllers\API\TestApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -9,3 +10,4 @@ use Illuminate\Support\Facades\Route;
 //})->middleware('auth:sanctum');'
 
 Route::get('test', [TestApiController::class, 'test'])->name('test-api');
+Route::apiResource('/students', StudentApiController::class);
