@@ -26,7 +26,8 @@ class UserRegistration extends FormRequest
             'name' => 'required|min:4',
             'email' => 'required|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'password_confirmation' => 'required|min:8'
+            'password_confirmation' => 'required|min:8',
+            'role' => 'nullable|in:admin,author,user'
         ];
     }
 
