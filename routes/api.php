@@ -35,6 +35,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('comments', [CommentController::class, 'index'])->name('index')->middleware('role:admin');
     Route::post('comments/change-status', [CommentController::class, 'changeStatus'])->name('change-status')->middleware('role:admin');
+
+    Route::get('comments/{comment}', [CommentController::class, 'destroy'])->name('destroy')->middleware('role:admin');
 });
 
 Route::get('categories', [BlogCategoryController::class, 'index']);

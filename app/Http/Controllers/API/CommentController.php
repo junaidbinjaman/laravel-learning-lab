@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreComment;
+use App\Models\BlogPost;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
@@ -101,5 +103,30 @@ class CommentController extends Controller
     public function destroy(string $id)
     {
         //
+        $comment = Comment::query()
+            ->find($id);
+        $loggedIn_user = Auth::user();
+
+        if (!$comment) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'No Comment Post Found'
+            ], 404);
+        }
+
+        if ($loggedIn_user->id == $comment->user_id || Auth::user()->role == 'admin') {
+            $comment->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Comment deleted successfully'
+            ], 201);
+        } else {
+            return response()->json([
+                'status' => 'fail',
+                'id' => $comment->user_id,
+                'message' => 'You are not allowed to perform this task'
+            ], 403);
+        }
     }
 }
