@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //})->middleware('auth:sanctum');'
 
-Route::get('test', [TestApiController::class, 'test'])->name('test-api');
+Route::middleware('throttle:api')->get('test', [TestApiController::class, 'test'])->name('test-api');
 Route::apiResource('/students', StudentApiController::class);
 
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'throttle:api'], function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('posts', BlogPostController::class)->middleware(['role:admin,author']);
     Route::post('/blog-post-image/{post}', [BlogPostController::class, 'blogPostImage'])->name('blog-post-image')->middleware('role:admin,author');
 
-    Route::post('post/react', [LikeController::class, 'react'])->name('react');
+    Route::middleware('throttle:reactions')->post('post/react', [LikeController::class, 'react'])->name('react');
     Route::apiResource('comments', CommentController::class);
 
     Route::get('comments', [CommentController::class, 'index'])->name('index')->middleware('role:admin');
