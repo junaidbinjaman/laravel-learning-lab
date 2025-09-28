@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Students\StoreStudentRequest;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,6 @@ class StudentApiController extends Controller
     public function index()
     {
         //
-
         $students = Student::query()->get();
 
         return response()->json([
@@ -26,9 +26,17 @@ class StudentApiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request)
     {
         //
+        $data = $request->validated();
+
+        Student::query()->create($data);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Student created successfully"
+        ], 201);
     }
 
     /**
