@@ -22,6 +22,18 @@ class AuthController extends Controller
         $validatedData = $request->validated();
         $validatedData['password'] = Hash::make($validatedData['password']);
 
+        $imagePath = null;
+        if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
+            $file = $request->file('profile_picture');
+
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/profile'), $fileName);
+
+            $imagePath = "storage/profile" . $fileName;
+        }
+
+        $validatedData['profile_picture'] = $imagePath;
+
         User::query()
             ->create($validatedData);
 

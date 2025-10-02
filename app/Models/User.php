@@ -12,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $name
  * @property string $email
  * @property string $password
+ * @property string $profile_picture
  */
 class User extends Authenticatable
 {
