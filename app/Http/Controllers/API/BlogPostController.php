@@ -18,6 +18,14 @@ class BlogPostController extends Controller
     public function index()
     {
         //
+        $post = BlogPost::query()
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'count' => count($post),
+            'data' => $post
+        ], 200);
     }
 
     /**
@@ -84,6 +92,48 @@ class BlogPostController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $blogPost = BlogPost::query()
+            ->find($id);
+
+        if (!$blogPost) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'No blog post found'
+            ], 404);
+        }
+
+        $loggedIn_user = Auth::user();
+
+        if($loggedIn_user->id != $request->user_id) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Unauthorized access'
+            ], 400);
+        }
+
+        $category = BlogCategory::query()
+            ->find($request->category_id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Category not found'
+            ], 404);
+        }
+
+        $blogPost->category_id = $request->category_id;
+        $blogPost->user_id = $request->user_id;
+        $blogPost->title = $request->title;
+        $blogPost->slug = Str::slug($request->title);
+        $blogPost->content = $request->content;
+        $blogPost->excerpt = $request->excerpt;
+        $blogPost->status = $request->status;
+        $blogPost->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Blog Post edited successfully'
+        ], 201);
     }
 
     /**
