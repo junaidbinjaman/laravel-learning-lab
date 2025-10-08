@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlogCategoryController;
+use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\StudentApiController;
 use App\Http\Controllers\API\TestApiController;
 use App\Http\Controllers\API\BlogPostController;
@@ -27,7 +28,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Blog post routes
     Route::apiResource('posts', BlogPostController::class)->middleware(['role:admin,author']);
     Route::post('/blog-post-image/{post}', [BlogPostController::class, 'blogPostImage'])->name('blog-post-image')->middleware('role:admin,author');
+
+    Route::post('post/react', [LikeController::class, 'react'])->name('react');
 });
 
 Route::get('categories', [BlogCategoryController::class, 'index']);
 Route::get('posts', [BlogPostController::class, 'index']);
+Route::get('post/reactions/{post}', [LikeController::class, 'reactions'])->name('reactions');
