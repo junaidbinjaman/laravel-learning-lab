@@ -5,6 +5,7 @@ namespace App\Models;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $user_id
@@ -33,4 +34,9 @@ class BlogPost extends Model
         'status',
         'published_at'
     ];
+
+    public function seo_data(): HasOne
+    {
+        return $this->hasOne(Seo::class, 'post_id');
+    }
 }

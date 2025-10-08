@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBlogPostRequest;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,7 @@ class BlogPostController extends Controller
     public function index()
     {
         //
-        $post = BlogPost::query()
+        $post = BlogPost::with('seo_data')
             ->get();
 
         return response()->json([
@@ -82,8 +83,17 @@ class BlogPostController extends Controller
             $data['published_at'] = date('Y-m-d H:i:s');
         }
 
-        BlogPost::query()
+        $blogPost = BlogPost::query()
             ->create($data);
+
+        $postId = $blogPost->id;
+        $seoData['post_id'] = $postId;
+        $seoData['meta_title'] = $request->meta_title;
+        $seoData['meta_description'] = $request->meta_description;
+        $seoData['meta_keywords'] = $request->meta_keywords;
+
+        Seo::query()
+            ->create($seoData);
 
         return response()->json([
             'status' => 'success',
@@ -136,6 +146,14 @@ class BlogPostController extends Controller
             $blogPost->excerpt = $request->excerpt;
             $blogPost->status = $request->status;
             $blogPost->save();
+
+            $seo_data = Seo::query()
+                ->where('post_id', $blogPost->id)->first();
+
+            $seo_data->meta_title = $request->meta_title;
+            $seo_data->meta_description = $request->meta_description;
+            $seo_data->meta_keywords = $request->meta_keywords;
+            $seo_data->save();
 
             return response()->json([
                 'status' => 'success',
