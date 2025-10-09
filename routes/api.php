@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\BlogCategoryController;
 use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\StudentApiController;
@@ -30,8 +31,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/blog-post-image/{post}', [BlogPostController::class, 'blogPostImage'])->name('blog-post-image')->middleware('role:admin,author');
 
     Route::post('post/react', [LikeController::class, 'react'])->name('react');
+    Route::apiResource('comments', CommentController::class);
+
+    Route::get('comments', [CommentController::class, 'index'])->name('index')->middleware('role:admin');
+    Route::post('comments/change-status', [CommentController::class, 'changeStatus'])->name('change-status')->middleware('role:admin');
 });
 
 Route::get('categories', [BlogCategoryController::class, 'index']);
 Route::get('posts', [BlogPostController::class, 'index']);
 Route::get('post/reactions/{post}', [LikeController::class, 'reactions'])->name('reactions');
+Route::get('comments/{comment}', [CommentController::class, 'show'])->name('show');
